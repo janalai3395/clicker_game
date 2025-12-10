@@ -1,69 +1,114 @@
-// 블랙잭 미니게임
+// --------------------- 블랙잭 설정 -------------------------
+let deck = [];
 let playerCards = [];
 let dealerCards = [];
+let gameOver = false;
 
+// HTML 요소
 const playerDisplay = document.getElementById("playerCards");
 const dealerDisplay = document.getElementById("dealerCards");
+// 🔥 HTML에서 결과 span id 가 'bjResult' 라고 가정
 const resultDisplay = document.getElementById("bjResult");
 
-// 블랙잭 열기
+// --------------------- 카드 생성 --------------------------
+function createDeck() {
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  deck = [];
+
+  for (let i = 0; i < numbers.length; i++) {
+    for (let j = 0; j < 4; j++) { // 4벌 (♠ ♥ ♦ ♣)
+      deck.push(numbers[i]);
+    }
+  }
+}
+
+// 카드를 한 장 뽑음
+function drawCard() {
+  return deck.splice(Math.floor(Math.random() * deck.length), 1)[0];
+}
+
+// 총합 계산
+function calcTotal(cards) {
+  return cards.reduce((a, b) => a + b, 0);
+}
+
+// 화면 업데이트
+function updateDisplay() {
+  if (!playerDisplay || !dealerDisplay) return;
+
+  playerDisplay.textContent =
+    `플레이어: ${playerCards.join(", ")} (총 ${calcTotal(playerCards)})`;
+  dealerDisplay.textContent =
+    `딜러: ${dealerCards.join(", ")} (총 ${calcTotal(dealerCards)})`;
+}
+
+// --------------------- 게임 종료 처리 -------------------------
+function endGame() {
+  const hitBtn = document.getElementById("btnHit");
+  const standBtn = document.getElementById("btnStand");
+
+  if (hitBtn) hitBtn.disabled = true;
+  if (standBtn) standBtn.disabled = true;
+  gameOver = true;
+}
+
+// --------------------- 게임 시작 -------------------------
+function startBlackjack() {
+  createDeck();
+  gameOver = false;
+
+  const hitBtn = document.getElementById("btnHit");
+  const standBtn = document.getElementById("btnStand");
+
+  if (hitBtn) hitBtn.disabled = false;
+  if (standBtn) standBtn.disabled = false;
+
+  playerCards = [drawCard(), drawCard()];
+  dealerCards = [drawCard()];
+
+  if (resultDisplay) resultDisplay.textContent = "";
+  updateDisplay();
+}
+
+// 🔥 HTML에서 onclick="openBlackjack()" 을 쓰고 있으므로 이 함수가 필요함
 function openBlackjack() {
   if (money < 1000) {
-    addLog("❌ 돈이 부족해서 블랙잭을 시작할 수 없습니다 (1000원 필요)");
+    addLog("❌ 블랙잭 입장료가 부족합니다! (1000원 필요)");
     return;
   }
 
   money -= 1000;
   updateMoneyDisplay();
-  addLog("🃏 블랙잭 시작 - 입장료 1000원 차감!");
+  addLog("🃏 블랙잭 입장! 1000원 차감!");
 
-  document.getElementById("blackjackArea").classList.remove("hidden");
-  document.getElementById("btnOpenBlackjack").style.display = "none"; // 버튼 숨기기
+  const area = document.getElementById("blackjackArea");
+  const openBtn = document.getElementById("btnOpenBlackjack");
+
+  if (area) area.classList.remove("hidden");
+  if (openBtn) openBtn.style.display = "none";
 
   startBlackjack();
 }
 
+// ---------------------- HIT --------------------------
+document.getElementById("btnHit")?.addEventListener("click", () => {
+  if (gameOver) return;
 
-
-// 카드 뽑기 (1~11 랜덤)
-function drawCard() {
-  return Math.floor(Math.random() * 11) + 1;
-}
-
-// 합계 계산
-function calcTotal(cards) {
-  return cards.reduce((a, b) => a + b, 0);
-}
-
-// 시작
-function startBlackjack() {
-  playerCards = [drawCard(), drawCard()];
-  dealerCards = [drawCard()];
-
-  updateDisplay();
-  resultDisplay.textContent = "게임 중...";
-}
-
-// UI 업데이트
-function updateDisplay() {
-  playerDisplay.textContent = playerCards.join(", ") + " (" + calcTotal(playerCards) + ")";
-  dealerDisplay.textContent = dealerCards.join(", ") + " (" + calcTotal(dealerCards) + ")";
-}
-
-// Hit
-document.getElementById("btnHit").addEventListener("click", () => {
   playerCards.push(drawCard());
   updateDisplay();
 
   if (calcTotal(playerCards) > 21) {
-    resultDisplay.textContent = "❌ 21 초과! 패배";
+    if (resultDisplay) resultDisplay.textContent = "💣 21 초과! 패배!";
     stats.minigameLosses += 1;
     updateStatsDisplay();
+    endGame();
   }
 });
 
-// Stand
-document.getElementById("btnStand").addEventListener("click", () => {
+// ---------------------- STAND --------------------------
+document.getElementById("btnStand")?.addEventListener("click", () => {
+  if (gameOver) return;
+
   while (calcTotal(dealerCards) < 17) {
     dealerCards.push(drawCard());
   }
@@ -74,23 +119,28 @@ document.getElementById("btnStand").addEventListener("click", () => {
   const dealerTotal = calcTotal(dealerCards);
 
   if (dealerTotal > 21 || playerTotal > dealerTotal) {
-    resultDisplay.textContent = "🎉 승리!";
+    if (resultDisplay) resultDisplay.textContent = "🎉 승리! 토큰 +3";
     stats.minigameWins += 1;
     updateStatsDisplay();
-
+    addTokens(3); // 승리 보상
   } else if (playerTotal < dealerTotal) {
-    resultDisplay.textContent = "❌ 패배!";
+    if (resultDisplay) resultDisplay.textContent = "❌ 패배!";
     stats.minigameLosses += 1;
     updateStatsDisplay();
-
   } else {
-    resultDisplay.textContent = "🤝 무승부!";
+    if (resultDisplay) resultDisplay.textContent = "🤝 무승부!";
   }
+
+  endGame();
 });
 
-// Restart
-document.getElementById("btnRestart").addEventListener("click", () => {
+// ---------------------- 다시 시작 --------------------------
+document.getElementById("btnRestart")?.addEventListener("click", () => {
+  const hitBtn = document.getElementById("btnHit");
+  const standBtn = document.getElementById("btnStand");
+
+  if (hitBtn) hitBtn.disabled = false;
+  if (standBtn) standBtn.disabled = false;
+
   startBlackjack();
-  document.getElementById("btnOpenBlackjack").style.display = "none"; // 재시작 때도 숨김 계속 유지
 });
-

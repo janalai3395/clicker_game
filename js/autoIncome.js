@@ -43,9 +43,9 @@ updateAutoIncomeDisplay();
 // 1초마다 자동 수익 지급
 setInterval(() => {
   if (autoIncome > 0) {
-    money += autoIncome;
-    stats.autoIncomeEarned += autoIncome;
-    stats.totalEarned += autoIncome;
+    money += autoIncome * autoMultiplier;
+    stats.autoIncomeEarned += autoIncome * autoMultiplier;
+    stats.totalEarned += autoIncome * autoMultiplier;
     updateMoneyDisplay();
     updateStatsDisplay();
   }

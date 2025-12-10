@@ -25,6 +25,7 @@ clickUpgradeBtn.addEventListener("click", () => {
 function updateUpgradeDisplay() {
   clickPowerDisplay.textContent = clickValue;
   upgradeCostDisplay.textContent = clickUpgradeCost;
+    updateTokenDisplay();
 }
 
 // 페이지 처음 로드 시 UI 표시

@@ -1,7 +1,11 @@
 // 전역 게임 상태
-let money = 10000000;
+let money = 500;
 let clickValue = 1;
 let highestMoney = 0;
+let tokens = 0;
+let clickMultiplier = 1;
+let autoIncomeMultiplier = 1;
+
 
 // DOM elements
 const moneyDisplay = document.getElementById("money");
@@ -17,6 +21,21 @@ function updateMoneyDisplay() {
 
   updateRankDisplay();
 }
+// 토큰 추가
+function addTokens(amount) {
+  tokens += amount;
+  updateTokenDisplay();
+}
+
+function useTokens(amount) {
+  if (tokens >= amount) {
+    tokens -= amount;
+    updateTokenDisplay();
+    return true;
+  }
+  addLog("❌ 토큰이 부족합니다");
+  return false;
+}
 
 // 등급 갱신
 function updateRankDisplay() {
@@ -29,6 +48,15 @@ function updateRankDisplay() {
   else if (highestMoney >= 1000) rankDisplay.textContent = "💼 소상공";
   else rankDisplay.textContent = "🧑‍💼 신입 창업가";
 }
+// 토큰 UI 갱신
+function updateTokenDisplay() {
+  const tokenDisplay = document.getElementById("tokenDisplay");
+  if (tokenDisplay) tokenDisplay.textContent = tokens.toLocaleString();
+
+  const tokenDisplayRoulette = document.getElementById("tokenDisplayRoulette");
+  if (tokenDisplayRoulette) tokenDisplayRoulette.textContent = tokens.toLocaleString();
+}
+
 
 
 // 로그 출력
