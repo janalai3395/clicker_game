@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>재벌 키우기 웹게임</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 상단 제목 -->
+  <header>
+    <h1>💰 재벌 키우기 웹게임 💰</h1>
+  </header>
+  
+  <!-- 탭 메뉴 -->
+  <nav class="tabs">
+    <button onclick="openTab('clicker')">💵 돈벌기</button>
+    <button onclick="openTab('shop')">🛒 상점</button>
+    <button onclick="openTab('minigame')">🎰 미니게임</button>
+    <button onclick="openTab('stock')">📈 주식 투자</button>
+    <button onclick="openTab('stats')">📊 통계</button>
+  </nav>
+
+
+  <!-- 메인 탭 영역 -->
+
+  <!-- 1. 돈벌기 -->
+  <section id="clicker" class="tab-content">
+    <h2>💵 클릭해서 돈 벌기</h2>
+    <p>현재 자산: <span id="money">0</span> 원</p>
+    <button id="clickBtn" class="main-btn">💸 클릭해서 돈 벌기</button>
+    <p>현재 등급: <span id="rankDisplay">신입 창업가</span></p>
+    <div id="logBox" class="log-box"></div>
+  </section>
+  
+
+  <!-- 2. 상점 -->
+  <section id="shop" class="tab-content hidden">
+    <h2>🛒 상점 업그레이드</h2>
+
+    <div class="shop-container">
+      <div class="shop-item">
+        <h3>🖱 클릭 업그레이드</h3>
+
+        <p>현재 클릭 수익: <span id="clickPower">1</span>원</p>
+        <p>업그레이드 비용: <span id="upgradeCost">10</span>원</p>
+
+        <button id="btnClickUpgrade">클릭당 수익 증가 ➕</button>
+        </div>
+
+
+      <div class="shop-item">
+        <h3>🏠 원룸</h3>
+        <p>자동 수익 +1/초</p>
+        <p>비용: <span id="cost_room">100</span>원</p>
+        <p>보유: <span id="count_room">0</span>채</p>
+        <button onclick="buyUpgrade('room')">구매</button>
+        </div>
+
+        <div class="shop-item">
+        <h3>🏢 오피스</h3>
+        <p>자동 수익 +5/초</p>
+        <p>비용: <span id="cost_office">1000</span>원</p>
+        <p>보유: <span id="count_office">0</span>개</span></p>
+        <button onclick="buyUpgrade('office')">구매</button>
+        </div>
+
+        <div class="shop-item">
+        <h3>🏬 쇼핑센터</h3>
+        <p>자동 수익 +20/초</p>
+        <p>비용: <span id="cost_mall">5000</span>원</p>
+        <p>보유: <span id="count_mall">0</span>개</p>
+        <button onclick="buyUpgrade('mall')">구매</button>
+        </div>
+
+        <div class="shop-item">
+        <h3>🏦 대기업</h3>
+        <p>자동 수익 +50/초</p>
+        <p>비용: <span id="cost_corp">10000</span>원</p>
+        <p>보유: <span id="count_corp">0</span>개</p>
+        <button onclick="buyUpgrade('corp')">구매</button>
+        </div>
+        
+        <h2 style="margin-top:20px;">🎟 토큰 전용 업그레이드</h2>
+
+        <div class="shop-container">
+
+        <div class="shop-item">
+            <h3>🧠 경제 마스터</h3>
+            <p>자동 수익 × 2</p>
+            <p>비용: <span id="tokenCost_master">20</span> 토큰</p>
+            <button onclick="buyTokenUpgrade('master')">구매</button>
+        </div>
+
+        <div class="shop-item">
+            <h3>⚡ 클릭 부스터</h3>
+            <p>클릭 수익 × 3</p>
+            <p>비용: <span id="tokenCost_booster">15</span> 토큰</p>
+            <button onclick="buyTokenUpgrade('booster')">구매</button>
+        </div>
+
+        </div>
+      
+    </div>
+  </section>
+
+
+  <!-- 3. 미니게임 -->
+    <section id="minigame" class="tab-content hidden">
+    <h2>🎰 미니게임</h2>
+
+    <button id="btnOpenBlackjack" onclick="openBlackjack()">🂡 블랙잭 (입장료 1000원)</button>
+    <button id="btnOpenRoulette" onclick="openRoulette()">🎯 룰렛 (입장료 1000원)</button>
+
+
+
+    <div id="blackjackArea" class="hidden">
+        <h3>🂡 블랙잭</h3>
+
+        <p>플레이어 카드: <span id="playerCards"></span></p>
+        <p>딜러 카드: <span id="dealerCards"></span></p>
+        <p>결과: <span id="bjResult"></span></p>
+
+        <button id="btnHit">Hit 카드받기</button>
+        <button id="btnStand">Stand 멈추기</button>
+        <button id="btnRestart">다시하기</button>
+    </div>
+        <div id="rouletteArea" class="hidden">
+  <div id="rouletteArea" class="hidden">
+  <h3>🎰 슬롯머신 룰렛</h3>
+
+  <p>현재 토큰: <span id="tokenDisplay">0</span></p>
+  <p>(입장료 1000원)</p>
+
+    <div class="slotBox">
+        <span id="slot1" class="slot">0</span>
+        <span id="slot2" class="slot">0</span>
+        <span id="slot3" class="slot">0</span>
+    </div>
+
+    <button id="spinButton">🎯 SPIN</button>
+
+    <p>결과: <span id="rouletteResult"></span></p>
+    </div>
+
+
+    </section>
+
+
+
+  <!-- 4. 주식 -->
+  <section id="stock" class="tab-content hidden">
+  <h2>📈 주식 투자</h2>
+
+  <div class="stock-container">
+    <div class="stock-item">
+      <h3>K-Tech ⚡</h3>
+      가격: <span id="price_ktech">0</span>원
+    </div>
+
+    <div class="stock-item">
+      <h3>K-Build 🏗</h3>
+      가격: <span id="price_kbuild">0</span>원
+    </div>
+
+    <div class="stock-item">
+      <h3>K-Bio 🌿</h3>
+      가격: <span id="price_kbio">0</span>원
+         </div>
+         </div>
+
+        <p style="color:#777">가격은 1초마다 변동됩니다</p>
+  </section>
+
+
+
+  <!-- 5. 통계 -->
+  <section id="stats" class="tab-content hidden">
+    <h2>📊 게임 통계</h2>
+
+    <ul>
+        <li>총 클릭 횟수: <span id="stat_clicks">0</span> 회</li>
+        <li>총 획득한 자산: <span id="stat_totalEarned">0</span> 원</li>
+        <li>자동 수익으로 번 돈: <span id="stat_autoIncomeEarned">0</span> 원</li>
+    </ul>
+  </section>
+
+
+
+<script>
+  // 탭 전환 기능 (UI만)
+  function openTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+    document.getElementById(tabId).classList.remove("hidden");
+  }
+</script>
+    <script src="js/main.js"></script>
+    <script src="js/clicker.js"></script>
+    <script src="js/shop.js"></script>
+    <script src="js/autoIncome.js"></script>
+    <script src="js/stocks.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/minigames/blackjack.js"></script>
+    <script src="js/minigames/roulette.js"></script>
+    <script src="js/tokenUpgrades.js"></script>
+</body>
+</html>
