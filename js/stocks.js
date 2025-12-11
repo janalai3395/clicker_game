@@ -89,16 +89,29 @@ function updateStockPrices() {
   Object.keys(stocks).forEach(key => {
     let stock = stocks[key];
 
-    stock.lastPrice = stock.price; // 직전가격 저장
+    // 직전가격 저장
+    stock.lastPrice = stock.price;
+
+    // 변동 방향 (50% 확률)
     let direction = Math.random() < 0.5 ? -1 : 1;
-    let changeRate = direction * (Math.random() * 20);  // -20% ~ +20%
-    
-    stock.price = Math.max(1, Math.floor(stock.price * (1 + changeRate / 100)));
+
+    // 변동폭 — -40% ~ +60% (더 큰 변동)
+    let changeRate = direction * (10 + Math.random() * 50);  
+    // ↓ 10~60% 중 랜덤 (더 폭발적인 흐름)
+
+    // 새로운 가격 계산
+    let newPrice = Math.floor(stock.price * (1 + changeRate / 100));
+
+    // 바닥 방지 — 최소 5원 유지
+    if (newPrice < 5) newPrice = Math.floor(5 + Math.random() * 10); 
+    // → 최소 5~15원 사이에서 다시 회복 가능
+
+    stock.price = newPrice;
 
     // UI 업데이트
     stock.element.textContent = stock.price.toLocaleString();
 
-    // 가격 색상 설정
+    // 색상 변경
     if (stock.price > stock.lastPrice) {
       stock.element.style.color = "green";
     } else if (stock.price < stock.lastPrice) {
@@ -108,6 +121,7 @@ function updateStockPrices() {
     }
   });
 }
+
 
 // 1초마다 가격 변경
 setInterval(updateStockPrices, 1000);
